@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+  <main style="font-family: Arial, Helvetica, sans-serif; max-width:700px; margin:32px auto; padding:0 16px;">
+    <h1>금 10g 미래가치 계산기</h1>
+    <p>현재 금 10g 가격을 입력하면 연평균 가정별로 3년 뒤 예상 금액을 계산합니다. (단순 복리 계산)</p>
+
+    <label for="price">현재 10g 가격(원): </label>
+    <input id="price" type="number" inputmode="numeric" placeholder="예: 950000" style="padding:6px; margin-right:8px; width:160px;" />
+    <button id="calc" style="padding:6px 10px;">계산</button>
+
+    <section id="results" style="margin-top:20px;"></section>
+
+    <details style="margin-top:12px;">
+      <summary>계산 방법/주의사항</summary>
+      <p>공식: P_future = P_now × (1 + r)^t, 여기서 t = 3년, r = 연평균률(소수). 실제 가격은 시장 변동성에 따라 달라집니다.</p>
+    </details>
+  </main>
+
+  <script>
+    (function(){
+      const rates = [{label:'-2%', r:-0.02},{label:'0%', r:0},{label:'2%', r:0.02},{label:'5%', r:0.05},{label:'10%', r:0.10}];
+      const t = 3; // years
+      function fmt(n){ return n.toLocaleString('ko-KR'); }
+
+      document.getElementById('calc').addEventListener('click', function(){
+        const el = document.getElementById('price');
+        const p = parseFloat(el.value);
+        const out = document.getElementById('results');
+        if (!p || p <= 0){
+          out.innerHTML = '<p style="color:#b00;">현재 10g 가격을 올바르게 입력하세요 (숫자).</p>';
+          return;
+        }
+        let html = '<table border="0" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;max-width:520px;"><thead><tr style="text-align:left;background:#f4f4f4;"><th>연평균 가정</th><th>3년 후 예상 가격 (원)</th></tr></thead><tbody>';
+        rates.forEach(function(item){
+          const val = p * Math.pow(1 + item.r, t);
+          html += '<tr><td>' + item.label + '</td><td>' + fmt(Math.round(val)) + '원</td></tr>';
+        });
+        html += '</tbody></table>';
+        out.innerHTML = html;
+      });
+
+      // 엔터키로도 계산되게 함
+      document.getElementById('price').addEventListener('keydown', function(e){ if (e.key === 'Enter') document.getElementById('calc').click(); });
+    })();
+  </script>
+</body>
+</html>
